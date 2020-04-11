@@ -30,32 +30,31 @@
 
     当我们想让盒子的 width 变为 content+padding+border 的时候。比如我定义了 3 个元素，希望他们并排显示，宽度是 33.35,我再加 20px 的 padding 值，标准盒模型此时计算宽度就会是 33.3%+20px 的 padding 值。这样肯定会被挤下去。所以我们使用怪异盒模型。33.3% = width + padding + border.
 
-
 > ### BFC
 
-BFC全称是块级格式上下文 (Block Formatting Context) 。
+BFC 全称是块级格式上下文 (Block Formatting Context) 。
 
-BFC是一个独立的布局环境，其中的子元素布局是不受外界的影响，同时子元素不会影响到外面元素，
+BFC 是一个独立的布局环境，其中的子元素布局是不受外界的影响，同时子元素不会影响到外面元素，
 
-- 实现BFC
-  
-  - 根元素HTML
+- 实现 BFC
 
-  - float属性不为none (left,right)
+  - 根元素 HTML
 
-  - position属性为absolute,fixed
+  - float 属性不为 none (left,right)
 
-  - display值为 inline-block、table-cell、table-caption、table、inline-table、flex、inline-flex、grid、inline-grid
+  - position 属性为 absolute,fixed
 
-  - overflow属性不为visible,为hidden，scroll，auto
+  - display 值为 inline-block、table-cell、table-caption、table、inline-table、flex、inline-flex、grid、inline-grid
 
-- BFC区域的约束规则
+  - overflow 属性不为 visible,为 hidden，scroll，auto
 
-  - 属于同一BFC的子元素垂直排列
+- BFC 区域的约束规则
 
-  - 属于同一BFC的子元素的margin会重叠
+  - 属于同一 BFC 的子元素垂直排列
 
-  - 生成BFC元素的子元素中，每一个子元素左外边距与包含块的左边界相接触（对于从右到左的格式化，右外边距接触右边界），即使浮动元素也是如此（尽管子元素的内容区域会由于浮动而压缩），除非这个子元素也创建了一个新的BFC（如它自身也是一个浮动元素）。
+  - 属于同一 BFC 的子元素的 margin 会重叠
+
+  - 生成 BFC 元素的子元素中，每一个子元素左外边距与包含块的左边界相接触（对于从右到左的格式化，右外边距接触右边界），即使浮动元素也是如此（尽管子元素的内容区域会由于浮动而压缩），除非这个子元素也创建了一个新的 BFC（如它自身也是一个浮动元素）。
 
   - BFC 的区域不会与 float 的元素区域重叠
 
@@ -63,14 +62,126 @@ BFC是一个独立的布局环境，其中的子元素布局是不受外界的�
 
   - 文字层不会被浮动层覆盖，环绕于周围
 
-- BFC解决的问题
+- BFC 解决的问题
 
- - 清除浮动
+  - 清除浮动
 
- - 阻止margin重叠
+  - 阻止 margin 重叠
 
- - 实现自适应两栏，三栏布局
+  - 实现自适应两栏，三栏布局
 
- - 可以阻止元素被浮动元素覆盖
+  - 可以阻止元素被浮动元素覆盖
 
+> ### 实现两栏布局
 
+- 方法一 ： 利用 float 和 BFC
+
+```
+  //CSS
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .left {
+    float: left;
+    width: 200px;
+    height: 200px;
+    background: tomato;
+  }
+
+  .right {
+    overflow: auto;
+    height: 200px;
+    background: #efefef;
+  }
+//HTML
+  <body>
+    <div class="left"></div>
+    <div class="right"></div>
+  </body>
+```
+
+- 方法二 使用 float+ margin-left
+
+```
+//CSS
+.left{
+  width: 200px;
+  height: 100px;
+  background: tomato;
+  float: left;
+}
+
+.right{
+  margin-left: 200px;
+  height: 100px;
+  background: #efefef;
+}
+//HTML
+<body>
+    <div class="left"></div>
+    <div class="right"></div>
+</body>
+```
+
+- 方法三 使用 absolute，margin-left
+
+```
+//CSS
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    position： relative;
+}
+.left {
+  width: 200px;
+  height: 100px;
+  background: tomato;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.right {
+  margin-left: 200px;
+  height: 100px;
+  background: #efefef;
+}
+//HTML
+<body>
+    <div class="left"></div>
+    <div class="right"></div>
+</body>
+```
+
+- 方法四 弹性盒布局
+
+```
+  //css
+    .father-box{
+        display: flex;
+    }
+
+    .left {
+        width: 200px;
+        height: 100px;
+        background: tomato;
+    }
+
+    .right {
+        flex: 1;
+        height: 100px;
+        background: #efefef;
+    }
+  //HTML
+  <body>
+    <div class="father-box">
+        <div class="left"></div>
+        <div class="right"></div>
+    </div>
+</body>
+```
