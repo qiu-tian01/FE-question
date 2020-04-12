@@ -72,6 +72,20 @@ BFC 是一个独立的布局环境，其中的子元素布局是不受外界的�
 
   - 可以阻止元素被浮动元素覆盖
 
+> ### CSS优先级确定
+
+- !important > 行内样式 > #id > .class > tag(属性选择器) > 标签选择器 > 通配选择器 > 继承 > 默认
+- 选择器 从右往左 解析
+
+> ### 层叠上下文
+
+![cengdie](https://user-gold-cdn.xitu.io/2019/2/14/168e9d9f3a1d368b?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+
+
+> ### 居中
+
+
 > ### 实现两栏布局
 
 - 方法一 ： 利用 float 和 BFC
@@ -185,3 +199,218 @@ body {
     </div>
 </body>
 ```
+
+> ### 三栏布局
+
+- 利用 position 布局
+
+```
+//CSS
+      * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-width: 550px;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        .column {
+            position: absolute;
+            top: 0;
+            min-height: 100px;
+        }
+
+        .left {
+            left: 0;
+            width: 200px;
+            background: #ffbbff;
+        }
+
+        .center {
+            left: 200px;
+            right: 150px;
+            background: #bfefff;
+        }
+
+        .right {
+            right: 0;
+            width: 150px;
+            background: #eeee00;
+        }
+//HTML
+<body>
+<!-- 缺点是三栏高度不统一。 -->
+    <div class="container">
+        <div class="column left">left</div>
+        <div class="column center">center</div>
+        <div class="column right">right</div>
+    </div>
+</body>
+```
+
+- 利用 float 布局
+
+```
+//CSS
+      * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            width: 100%;
+            min-width: 550px;
+        }
+
+        .container {
+            position: relative;
+        }
+
+        .column {
+            min-height: 100px;
+        }
+
+        .left {
+            float: left;
+            width: 200px;
+            background: #ffbbff;
+        }
+
+        .center {
+            margin: 0 150px 0 200px;
+            background: #bfefff;
+        }
+
+        .right {
+            float: right;
+            width: 150px;
+            background: #eeee00;
+        }
+//HTML
+ <!-- 这种方法的缺点是三栏高度不统一，center区域的内容要在最后渲染。否则右边会在第二行显示 -->
+    <div class="container">
+        <div class="column left">left</div>
+        <div class="column right">right</div>
+    <div class="column center">center</div>
+</div>
+```
+
+- 利用 flex 布局
+
+```
+<!-- CSS -->
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-width: 550px;
+    }
+    .container {
+      display: flex;
+      justify-content: space-between;
+    }
+    .column {
+      min-height: 100px;
+    }
+    .left {
+      order: 1;
+      width: 200px;
+      background: #ffbbff;
+    }
+    .center {
+      order: 2;
+      flex: 1;
+      background: #bfefff;
+    }
+    .right {
+      order: 3;
+      width: 150px;
+      background: #eeee00;
+    }
+<!-- HTML -->
+<div class="container">
+    <div class="column center">center</div>
+    <div class="column left">left</div>
+    <div class="column right">right</div>
+</div>
+```
+
+- Grid 布局
+
+```
+<!-- CSS -->
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      display: grid;
+      grid-template-columns: 200px auto 150px;
+      width: 100%;
+      min-height: 100px;
+    }
+    .left {
+      grid-row: 1/2;
+      grid-column: 1/2;
+      background: #ffbbff;
+    }
+    .center {
+      grid-row: 1/2;
+      grid-column: 2/3;
+      background: #bfefff;
+    }
+    .right {
+      grid-row: 1/2;
+      grid-column: 3/4;
+      background: #eeee00;
+    }
+<!-- HTML -->
+ <div class="container">
+    <div class="column left">left</div>
+    <div class="column center">center</div>
+    <div class="column right">right</div>
+  </div>
+```
+
+- 利用 tabel-cell 布局
+
+```
+<!-- CSS -->
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .column {
+      display: table-cell;
+      height: 100px;
+      min-height: 100px;
+    }
+    .left {
+      width: 200px;
+      min-width: 200px;
+      background: #ffbbff;
+    }
+    .center {
+      width: 100%;
+      background: #bfefff;
+    }
+    .right {
+      width: 150px;
+      min-width: 150px;
+      background: #eeee00;
+    }
+<!-- HTML -->
+  <div class="container">
+    <div class="column left">left</div>
+    <div class="column center">center</div>
+    <div class="column right">right</div>
+  </div>
+```
+
+> ###  圣杯布局和双飞翼布局
