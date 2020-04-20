@@ -181,9 +181,53 @@ onReachBottom()
 
 > ### 用户授权
 
+1. 需要对用户进行权限校验，判断用户是否已经对小程序进行过权限设置，使用wx.getSetting()方法
+
+2. 如果第一次登录，进行wx.getSetting()进行校验，会返回onFail回调，这时我们需要弹出授权面板，让用户手动授权。使用<button open-type="getUserInfo" @getUserInfo="getUserINfo"></button>
+
+3. wx.getUserInfo()获取用户信息,该函数调用成功后顾名思义会返回用户的信息，包括头像、名称等.
+
+4. 如果在storage中找不到openId，则会进行调用wx.login()方法
+
+我们需要先使用 wx.getSettings  来进行授权的判断，如果判断成功，获得了授权，就可以执行业务的代码。如果判断不成功，需要则使用 wx.authorize  来进行授权的获取。同样的，获取成功后就可以执行业务代码。如果获取失败，则需要重新获取授权。这时，你可以使用 wx.openSettngs  来打开配置界面，让用户主动配置，开启授权。
+
+
 > ### 如何获取用户授权，用户如果取消授权后如何再次授权
 
+-  判断用户是否授权，使用wx.getSetting()，如果判断不成功，需要则使用 wx.authorize  来进行授权的获取。在授权失败时，我们调用wx.showModel()方法。跳转去设置页。设置页只有<button open-type="getUserInfo">.用户去系统设置页设置后就可以拿到信息。
+
+
 > ### 如何获取元素信息
+
+```
+ getRect () {
+    wx.createSelectorQuery().select('#the-id').boundingClientRect(function(rect){
+      rect.id      // 节点的ID
+      rect.dataset // 节点的dataset
+      rect.left    // 节点的左边界坐标
+      rect.right   // 节点的右边界坐标
+      rect.top     // 节点的上边界坐标
+      rect.bottom  // 节点的下边界坐标
+      rect.width   // 节点的宽度
+      rect.height  // 节点的高度
+    }).exec()
+  },
+  getAllRects () {
+    wx.createSelectorQuery().selectAll('.a-class').boundingClientRect(function(rects){
+      rects.forEach(function(rect){
+        rect.id      // 节点的ID
+        rect.dataset // 节点的dataset
+        rect.left    // 节点的左边界坐标
+        rect.right   // 节点的右边界坐标
+        rect.top     // 节点的上边界坐标
+        rect.bottom  // 节点的下边界坐标
+        rect.width   // 节点的宽度
+        rect.height  // 节点的高度
+      })
+    }).exec()
+  }
+```
+
 
 > ### 微信小程序传参方式有哪些，组件传参方式
 
