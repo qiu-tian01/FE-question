@@ -125,77 +125,75 @@ wxs 因为运行环境不同回避 js 快，但是不能调用 js 方法和晓�
 
 > ### 微信小程序双向绑定与 Vue 有哪些不同
 
-微信小程序改变this.data时不能同步的改变视图层，需要嗲用this.setData()
+微信小程序改变 this.data 时不能同步的改变视图层，需要嗲用 this.setData()
 
 > ### 如何实现下拉刷新,上拉刷新
 
 onPullDownRefresh()
 监听用户下拉刷新事件。
 
-- 需要在app.json的window选项中或页面配置中开启enablePullDownRefresh。
-- 可以通过wx.startPullDownRefresh触发下拉刷新，调用后触发下拉刷新动画，效果与用户手动下拉刷新一致。
-- 当处理完数据刷新后，wx.stopPullDownRefresh可以停止当前页面的下拉刷新。
+- 需要在 app.json 的 window 选项中或页面配置中开启 enablePullDownRefresh。
+- 可以通过 wx.startPullDownRefresh 触发下拉刷新，调用后触发下拉刷新动画，效果与用户手动下拉刷新一致。
+- 当处理完数据刷新后，wx.stopPullDownRefresh 可以停止当前页面的下拉刷新。
 
 onReachBottom()
 监听用户上拉触底事件。
 
-- 可以在app.json的window选项中或页面配置中设置触发距离onReachBottomDistance。
+- 可以在 app.json 的 window 选项中或页面配置中设置触发距离 onReachBottomDistance。
 - 在触发距离内滑动期间，本事件只会被触发一次。
 
 > ### 如何获取用户信息
 
 - 获取用户基本信息
 
-    使用open-data获取用户头像，昵称，群名称，性别，所在城市，用户所在省份，用户所在国家，用户的语言
+  使用 open-data 获取用户头像，昵称，群名称，性别，所在城市，用户所在省份，用户所在国家，用户的语言
 
-    使用wx.getUserInfo
+  使用 wx.getUserInfo
 
-    使用前提是用户授权，使用 wx.getSetting授权或者使用wx.login登录
+  使用前提是用户授权，使用 wx.getSetting 授权或者使用 wx.login 登录
 
-- 获取用户openid
+- 获取用户 openid
 
-    - 方法一
+  - 方法一
 
-    1. 首先调用wx.login({})获取登录凭证（code）
-    2. 调用接口 用拿到的code 换取 openid
+  1. 首先调用 wx.login({})获取登录凭证（code）
+  2. 调用接口 用拿到的 code 换取 openid
 
-    - 方法二
+  - 方法二
 
-    使用云函数调用
-    ```
-    exports.main = (event, context) => {
-    // 这里获取到的 openId、 appId 和 unionId 是可信的，注意 unionId 仅在满足 unionId 获取条件时返回
-    let { OPENID, APPID, UNIONID } = cloud.getWXContext()
+  使用云函数调用
 
-    return {
-        OPENID,
-        APPID,
-        UNIONID,
-    }
-    ```
+  ```
+  exports.main = (event, context) => {
+  // 这里获取到的 openId、 appId 和 unionId 是可信的，注意 unionId 仅在满足 unionId 获取条件时返回
+  let { OPENID, APPID, UNIONID } = cloud.getWXContext()
+
+  return {
+      OPENID,
+      APPID,
+      UNIONID,
+  }
+  ```
 
 - 获取手机号
 
-    需要将 button 组件 open-type 的值设置为 getPhoneNumber，当用户点击并同意之后，可以通过 bindgetphonenumber 事件回调获取到微信服务器返回的加密数据， 然后在第三方服务端结合 session_key 以及 app_id 进行解密获取手机号。
-
+  需要将 button 组件 open-type 的值设置为 getPhoneNumber，当用户点击并同意之后，可以通过 bindgetphonenumber 事件回调获取到微信服务器返回的加密数据， 然后在第三方服务端结合 session_key 以及 app_id 进行解密获取手机号。
 
 > ### 用户授权
 
-1. 需要对用户进行权限校验，判断用户是否已经对小程序进行过权限设置，使用wx.getSetting()方法
+1. 需要对用户进行权限校验，判断用户是否已经对小程序进行过权限设置，使用 wx.getSetting()方法
 
-2. 如果第一次登录，进行wx.getSetting()进行校验，会返回onFail回调，这时我们需要弹出授权面板，让用户手动授权。使用<button open-type="getUserInfo" @getUserInfo="getUserINfo"></button>
+2. 如果第一次登录，进行 wx.getSetting()进行校验，会返回 onFail 回调，这时我们需要弹出授权面板，让用户手动授权。使用<button open-type="getUserInfo" @getUserInfo="getUserINfo"></button>
 
 3. wx.getUserInfo()获取用户信息,该函数调用成功后顾名思义会返回用户的信息，包括头像、名称等.
 
-4. 如果在storage中找不到openId，则会进行调用wx.login()方法
+4. 如果在 storage 中找不到 openId，则会进行调用 wx.login()方法
 
-我们需要先使用 wx.getSettings  来进行授权的判断，如果判断成功，获得了授权，就可以执行业务的代码。如果判断不成功，需要则使用 wx.authorize  来进行授权的获取。同样的，获取成功后就可以执行业务代码。如果获取失败，则需要重新获取授权。这时，你可以使用 wx.openSettngs  来打开配置界面，让用户主动配置，开启授权。
-
+我们需要先使用 wx.getSettings 来进行授权的判断，如果判断成功，获得了授权，就可以执行业务的代码。如果判断不成功，需要则使用 wx.authorize 来进行授权的获取。同样的，获取成功后就可以执行业务代码。如果获取失败，则需要重新获取授权。这时，你可以使用 wx.openSettngs 来打开配置界面，让用户主动配置，开启授权。
 
 > ### 如何获取用户授权，用户如果取消授权后如何再次授权
 
--  判断用户是否授权，使用wx.getSetting()，如果判断不成功，需要则使用 wx.authorize  来进行授权的获取。在授权失败时，我们调用wx.showModel()方法。跳转去设置页。设置页只有<button open-type="getUserInfo">.用户去系统设置页设置后就可以拿到信息。
-
+- 判断用户是否授权，使用 wx.getSetting()，如果判断不成功，需要则使用 wx.authorize 来进行授权的获取。在授权失败时，我们调用 wx.showModel()方法。跳转去设置页。设置页只有<button open-type="getUserInfo">.用户去系统设置页设置后就可以拿到信息。
 
 > ### 如何获取元素信息
 
@@ -228,8 +226,75 @@ onReachBottom()
   }
 ```
 
-
 > ### 微信小程序传参方式有哪些，组件传参方式
+
+- 小程序页面传参方式
+
+  1. navigator 地址传参
+
+  ```
+  wx.navagatorTo({
+    url : '../index/index?id=xxx&name=xxx'
+  })
+  ```
+
+  去值在 onLoad 中参数获取
+
+  2. 全局变量
+     app.js 页面
+
+  ```
+  globalData:{
+    id:2
+  }
+  ```
+
+  取值
+
+  ```
+  var id = app.globalData.id
+  ```
+
+  3.  绑定事件通过 data-传参，取值在方法中 e.currentTarget.dataset 中取值
+
+  4.  form 表单传值
+
+  5. Storage传值
+
+- 小程序组件传参方法
+
+  1. 父子组件传参
+
+  ```
+  //父组件引用子组件，直接在标签内传值
+  <child id="1"></child>
+  //子组件在properties中接收
+  properties : {
+    id : String
+  }
+  ```
+
+  2. 子组件向父组件传参
+
+  ```
+  //父组件中绑定一个事件用来接收参数
+  <child bind:myevent="OnMyEvent"></child>
+  methods: {
+    onMyEvent:function(e){
+      this.setData({
+        paramBtoA: e.detail.id
+      })
+    }
+  }
+  //子组件中在methods中写方法
+  change:function(){
+    this.triggerEvent('myevent', { id:123});
+  }
+  ```
+
+  3. 兄弟组件传参
+
+    通过父组件进行传递，子组件A传值到父组件，父组件setData值，再将值传递给组件B
 
 > ### 小程序生命周期和小程序页面生命周期
 
