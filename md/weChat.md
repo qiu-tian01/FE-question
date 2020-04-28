@@ -385,23 +385,182 @@ onReachBottom()
 
   ``` 
 
-> ### 微信小程序获取用户信息
-
-
 > ### 代码审核和发布
+
+- 审核
+
+  - 进入微信公众平台，点击开发管理
+
+  - 在小程序开发者上传的开发版本点击提交审核
+
+  - 点击【提交审核】，确认协议后，在新打开的页面中填写资料。
+
+- 发布
+
+ - 进入微信公众平台，点击开发管理
+
+ - 在右侧的的【审核版本】中找到【审核通过，待发布】的版本。
+
+ - 点击【提交发布】按钮，扫码确认后即可发布你的小程序。
 
 > ### 小程序申请微信支付
 
+````
+    wx.requestPayment({
+      timeStamp : '', // 时间戳，必填（后台传回）
+      nonceStr : '', // 随机字符串，必填（后台传回）
+      package : '', // 统一下单接口返回的 prepay_id 参数值，必填（后台传回）
+      signType : 'MD5', // 签名算法，非必填，（预先约定或者后台传回）
+      paySign  : '', // 签名 ，必填 （后台传回）
+      success:function(res){ // 成功后的回调函数
+          // do something
+    }
+})
+````
+
 > ### 转发分享
+
+- 获取转发信息
+
+现在通过调用 wx.showShareMenu 并且设置 withShareTicket 为 true ，当用户将小程序转发到任一群聊之后，此转发卡片在群聊中被其他用户打开时，可以在 App.onLaunch 或 App.onShow 获取到一个 shareTicket。通过调用 wx.getShareInfo 接口传入此 shareTicket 可以获取到转发信息。
+
+- 页面内发起转发
+
+ 通过给 button 组件设置属性 open-type="share"，可以在用户点击按钮后触发 Page.onShareAppMessage 事件
+
+- Tips
+
+  - 不自定义转发图片的情况下，默认会取当前页面，从顶部开始，高度为 80% 屏幕宽度的图像作为转发图片。
+
+  - 转发的调试支持请查看 普通转发的调试支持 和 带 shareTicket 的转发
+
+  - 只有转发到群聊中打开才可以获取到 shareTickets 返回值，单聊没有 shareTickets
+
+  - shareTicket 仅在当前小程序生命周期内有效
+
+  - 由于策略变动，小程序群相关能力进行调整，开发者可先使用 wx.getShareInfo 接口中的群 ID 进行功能开发。
+
 
 > ### 微信小程序的优劣势
 
-> ### 小程序解析富文本编辑器
+- 优势
+
+  - 无需下载，通过搜索和扫一扫就可以打开。
+
+  - 开发成本要比App要低。
+
+  - 安依托微信流量，天生推广传播优势
+
+  - 为用户提供良好的安全保障。小程序的发布，微信拥有一套严格的审查流程， 不能通过审查的小程序是无法发布到线上的。
+
+- 劣势
+
+  - 限制较多,页面大小不能超过2M。不能打开超过10个层级的页面
+
+  - 一些功能需要审核，限制了功能
 
 > ### 小程序获取地理位置
 
-> ### 小程序云开发
 
-> ### 小程序登录流程
+```
+wx.getSetting({
+      success: (res) => {
+        console.log(JSON.stringify(res))
+        // res.authSetting['scope.userLocation'] == undefined    表示 初始化进入该页面
+        // res.authSetting['scope.userLocation'] == false    表示 非初始化进入该页面,且未授权
+        // res.authSetting['scope.userLocation'] == true    表示 地理位置授权
+        if (res.authSetting['scope.userLocation'] != undefined && res.authSetting['scope.userLocation'] != true) {
+          wx.showModal({
+            title: '请求授权当前位置',
+            content: '需要获取您的地理位置，请确认授权',
+            success: function (res) {
+              if (res.cancel) {
+                wx.showToast({
+                  title: '拒绝授权',
+                  icon: 'none',
+                  duration: 1000
+                })
+              } else if (res.confirm) {
+                wx.openSetting({
+                  success: function (dataAu) {
+                    if (dataAu.authSetting["scope.userLocation"] == true) {
+                      wx.showToast({
+                        title: '授权成功',
+                        icon: 'success',
+                        duration: 1000
+                      })
+                      //再次授权，调用wx.getLocation的API
+                      
+                    } else {
+                      wx.showToast({
+                        title: '授权失败',
+                        icon: 'none',
+                        duration: 1000
+                      })
+                    }
+                  }
+                })
+              }
+            }
+          })
+        } else if (res.authSetting['scope.userLocation'] == undefined) {
+          //调用wx.getLocation的API
+        }
+        else {
+          //调用wx.getLocation的API
+        }
+      }
+    })
+```
+在拿到用户授权以后，使用微信的API获取当前位置的经纬度微信获取位置API
+```
+onLoad: function () {
+      wx.getLocation({
+        success: res=> {
+          console.log(res);
+          this.setData({
+            location: res,
+          })
+          // console.log(app.globalData.location);
+        },
+      })
+}
+```
+> ### 小程序冷启动和热启动
+
+热启动：假如用户已经打开过某小程序，然后在一定时间内再次打开该小程序，此时无需重新启动，只需将后台态的小程序切换到前台，这个过程就是热启动；
+冷启动：用户首次打开或小程序被微信主动销毁后再次打开的情况，此时小程序需要重新加载启动，即冷启动。
+小程序冷启动时，如果发现有新版本，将会异步下载新版本的代码包，并同时用客户端本地的包进行启动，即新版本的小程序需要等下一次冷启动才会应用上。
+```
+const updateManager = wx.getUpdateManager()
+
+updateManager.onCheckForUpdate(function (res) {
+  // 请求完新版本信息的回调
+  console.log(res.hasUpdate)
+})
+
+updateManager.onUpdateReady(function () {
+  wx.showModal({
+    title: '更新提示',
+    content: '新版本已经准备好，是否重启应用？',
+    success(res) {
+      if (res.confirm) {
+        // 新的版本已经下载好，调用 applyUpdate 应用新版本并重启
+        updateManager.applyUpdate()
+      }
+    }
+  })
+})
+
+updateManager.onUpdateFailed(function () {
+  // 新版本下载失败
+})
+```
+
+<!-- > ### 小程序登录流程 -->
+
+
 
 <!-- > ### 使用 webview 直接加载要注意哪些事项 -->
+
+<!-- > ### 小程序云开发 -->
