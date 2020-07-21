@@ -319,7 +319,7 @@ onReachBottom()
 
   - onHide 从前台切到后台或进入其他页面触发
 
-  - 页面卸载时触发
+  - onUnLoad页面卸载时触发
 
 - 组件生命周期 （在lifetimes定义）
 
